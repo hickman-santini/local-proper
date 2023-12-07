@@ -1,0 +1,121 @@
+```{r}
+a <- read.csv("raw_user_forecasts.csv")
+```
+
+```{r}
+library(dplyr)
+library(purrr)
+```
+
+```{r}
+# How many user_id forecasted on every game
+a %>%
+  group_by(week, team1, team2) %>%
+  summarise(num_users = n_distinct(user_id)) %>%
+  arrange(week, team1, team2)
+
+a$game_id <- paste(a$week, a$team1, a$team2, sep="_")
+```
+
+```{r}
+# Step 1 and 2: Group by games and list users
+games_with_users <- a %>%
+  group_by(game_id) %>%
+  summarise(users = list(unique(user_id))) %>%
+  ungroup()
+
+# Function to compute the common users for a combination of games
+common_users <- function(games) {
+  users_lists <- games_with_users$users[games_with_users$game_id %in% games]
+  reduce(users_lists, intersect)
+}
+
+# Step 3: Compute all combinations of games (e.g., up to 3 games for the sake of example)
+combinations <- unlist(lapply(2:3, function(m) combn(games_with_users$game_id, m = m, simplify = FALSE)), recursive = FALSE)
+
+# Step 4: Determine common users for each combination
+results <- map_dfr(combinations, ~ tibble(game_combination = list(.), common_users = list(common_users(.))))
+
+# Step 5: Identify the combinations with the largest number of games with non-empty common users
+results %>%
+  filter(length(common_users) > 0) %>%
+  arrange(desc(length(game_combination)))
+```
+
+```{r}
+# How many unique games?
+length(unique(a$game_id))
+
+# How many unique users?
+length(unique(a$user_id))
+
+# How many games did each user forecast on?
+a %>%
+  group_by(user_id) %>%
+  summarise(num_games = n_distinct(game_id)) %>%
+  arrange(desc(num_games))
+
+# How many users forecasted on all 284 games?
+b <- a %>%
+  group_by(user_id) %>%
+  summarise(num_games = n_distinct(game_id))
+```
+
+```{r}
+# Filter to only those user IDs who forecasted on 284 games
+c <- merge(a, b, on = "user_id")
+```
+
+```{r}
+d <- c %>% filter(num_games == 284)
+```
+
+```{r}
+# For each user_id, make a histogram of their user_prob
+library(ggplot2)
+for (user in unique(d$user_id)) {
+  e <- d %>% filter(user_id == user)
+  f <- ggplot(e, aes(x = user_prob)) + geom_histogram(color = "black", fill = "pink", alpha = 0.3, binwidth = 0.025, center = 0.0124) +
+    labs(title = paste0("538 User ID: ", user, " User Prob Distribution (", length(unique(e$game_id)), " Games)")) +
+    scale_x_continuous(limits = c(-0.01, 1.03))
+  ggsave(paste0("individual_hists/user_", user, ".png"), f)
+}
+```
+
+```{r}
+# Median for each question - histogram of that
+all_users <- c %>%
+  group_by(game_id) %>%
+  summarise(median_user_prob = median(user_prob)) %>%
+  arrange(median_user_prob)
+
+p1 <- ggplot(all_users, aes(x = median_user_prob)) +
+    geom_histogram(color = "black", fill = "skyblue", alpha = 0.3, binwidth = 0.025, center = 0.0124) +
+    labs(title = paste0("All Users (", length(unique(c$user_id)), ") Median User Prob Distribution")) +
+    scale_x_continuous(limits = c(-0.01, 1.03))
+ggsave("all_users_median_user_prob.png")
+
+users_who_forecasted_all_games <- d %>%
+  group_by(game_id) %>%
+  summarise(median_user_prob = median(user_prob)) %>%
+  arrange(median_user_prob)
+
+p2 <- ggplot(users_who_forecasted_all_games, aes(x = median_user_prob)) + 
+    geom_histogram(color = "black", fill = "seagreen", alpha = 0.3, binwidth = 0.025, center = 0.0124) +
+    labs(title = paste0("Users Who Forecasted All Games (", length(unique(d$user_id)), ") Median User Prob Distribution")) +
+    scale_x_continuous(limits = c(-0.01, 1.03))
+ggsave("users_who_forecasted_all_games_median_user_prob.png")
+```
+
+```{r}
+# Castler
+a %>% filter(user_id == "7715") %>%
+    group_by(user_prob) %>%
+    summarise(n = n()) %>%
+    arrange(desc(n)) %>%
+    print(n = 23)
+```
+
+```{r}
+a %>% filter(user_id == "8946") %>% group_by(user_prob) %>% summarize(n = n()) %>% arrange(desc(user_prob)) %>% print(n = 74)
+```
