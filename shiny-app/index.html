@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Instant Reliability Significance (IRS)</title>
+  <script src="https://cdn.jsdelivr.net/npm/@r-lib/shinyapps@latest/index.js"></script>
+</head>
+
+<body>
+  <div id="shiny-app-container"></div>
+  <script>
+    const app = new ShinyApps.App("shiny-app", "dxlth4-molly-hickman/irs");
+    app.bind(document.getElementById("shiny-app-container"));
+    app.connect();
+  </script>
+</body>
+
+</html>
