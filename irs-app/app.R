@@ -6,7 +6,7 @@ ui <- fluidPage(
   h3(HTML("<b>How should we interpret reliability graphs?</b>")),
   p("What's important is consistency, not distance from the 'perfect calibration' line."),
   div(
-    img(src = "silver-BRAGGING-01-1.png", height = "300px"),
+    img(src = "silver-BRAGGING-01-1.png", height = "500px"),
     p(HTML("Source: <a href='https://fivethirtyeight.com/features/when-we-say-70-percent-it-really-means-70-percent/' target='_blank'>FiveThirtyEight</a>"), style = "text-align: left; font-style: italic;")
   ),
   p("This handy simulator tells you what the chances are that [N] forecasts of [p_gov] would be 'aligned' in only [threshold] or fewer of the outcomes, e.g. in this example from FiveThirtyEight, if the true probability of a home-team win were 85% and there were 383 games, what are the chances that only 79% of those games would be home-wins? Actually very small, suggesting we shouldn't be that impressed."),
