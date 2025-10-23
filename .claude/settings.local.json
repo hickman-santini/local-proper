@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebSearch",
+      "Bash(Rscript:*)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Read(//tmp/**)",
+      "Bash(killall:*)",
+      "Bash(tee:*)",
+      "Bash(cat:*)",
+      "Bash(pkill:*)",
+      "Bash(./check_progress.sh:*)",
+      "Bash(test:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

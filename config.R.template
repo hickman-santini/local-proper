@@ -1,0 +1,5 @@
+# Metaculus API Configuration Template
+# Copy this file to config.R and add your actual API key
+# config.R is in .gitignore and will not be committed
+
+API_KEY <- "your_api_key_here"

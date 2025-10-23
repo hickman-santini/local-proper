@@ -1,0 +1,15 @@
+# API credentials - DO NOT COMMIT
+config.R
+
+# R session data
+.RData
+.Rhistory
+.Rproj.user
+
+# Temporary files
+*.log
+/tmp/
+
+# Large data files (optional - uncomment if you don't want to commit these)
+# *.rds
+# *.csv
